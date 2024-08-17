@@ -1,6 +1,7 @@
 using UnityEngine;
 using Unity.Netcode;
 using Invector.vCharacterController;
+using TMPro;
 public class PlayerLifeStats : NetworkBehaviour
 {
     int playerId;
@@ -8,20 +9,18 @@ public class PlayerLifeStats : NetworkBehaviour
     float speeed;
     float power;
     vThirdPersonMotor vThirdMotor;
+    [SerializeField] TextMeshPro playerIdText;
     private void Start()
     {
-        SetPlayerStat(0, 100, 5, 5);
+        int  newPlayerId = PlayersManager.instance.GetNewPlayerId();
+        SetPlayerStat(newPlayerId, 100, 5, 5);
         ChangeSpeed(speeed);
     }
     private void Update()
     {
         if(Input.GetKeyDown(KeyCode.Z)) 
         {
-            LowerSpeed(0,4);
-        }
-        if(Input.GetKeyDown(KeyCode.X))
-        {
-            LowerSpeed(10,5);
+            CrazySpeed();
         }
     }
     public void SetPlayerStat(int playerId,float initialHealth,float speed,float power)
@@ -32,9 +31,14 @@ public class PlayerLifeStats : NetworkBehaviour
         this.power = power;
         initialSpeed = speed;
         vThirdMotor = GetComponent<vThirdPersonMotor>();
+        playerIdText.text = playerId.ToString();
     }
     float initialSpeed;
-    public void LowerSpeed(float targetSpeed,float duration)
+    public void CrazySpeed()
+    {
+        ChangeSpeed(20,10);
+    }
+    public void ChangeSpeed(float targetSpeed,float duration)
     {
         ChangeSpeed(targetSpeed);
         Invoke(nameof(ReturnSpeed), duration);
@@ -58,6 +62,7 @@ public class PlayerLifeStats : NetworkBehaviour
         if(health<=0)
             Death();
     }
+    public int GetPlayerId() { return playerId; }
     public void Death()
     {
 

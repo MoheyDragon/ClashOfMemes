@@ -1,16 +1,28 @@
 using UnityEngine;
+using Unity.Netcode;
 
-public class PlayerCombatController : MonoBehaviour
+public class PlayerCombatController : NetworkBehaviour
 {
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
-    void Start()
+    [SerializeField] Transform ShootsSpawner;
+    [SerializeField] GameObject Shot;
+    [SerializeField] KeyCode shootKey;
+    PlayerLifeStats playerStats;
+    private void Start()
     {
-        
+        playerStats = GetComponent<PlayerLifeStats>();
     }
-
-    // Update is called once per frame
-    void Update()
+    private void Update()
     {
-        
+        if (!IsOwner) return;
+        if (Input.GetKeyDown(shootKey))
+        {
+            Shoot();
+        }
+    }
+    public void Shoot()
+    {
+        Shot shot= Instantiate(Shot, ShootsSpawner).GetComponent<Shot>();
+        shot.SetShotOwner(playerStats.GetPlayerId());
+
     }
 }
